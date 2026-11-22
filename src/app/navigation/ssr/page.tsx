@@ -1,7 +1,11 @@
 import ServerCard from "./_components/ServerCard";
 import InteractiveClientCounter from "./_components/InteractiveClientCounter";
+import { connection } from "next/server";
+
+export const instant = false;
 
 export default async function SSRModulePage() {
+  await connection();
   const pageRenderTimestamp = new Date().toLocaleTimeString();
 
   return (

@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { connection } from "next/server";
+
+export const instant = false;
 
 export default async function DynamicTargetPage() {
+  await connection();
   const serverTimestamp = new Date().toISOString();
 
   return (
