@@ -1,6 +1,33 @@
+import { Suspense } from "react";
 import Link from "next/link";
+import { connection } from "next/server";
 
-export default function FastTargetPage() {
+// 1. Isolate the dynamic connection() + timestamp inside its own component
+async function ServerTimestamp() {
+  await connection();
+  await new Promise((resolve) => setTimeout(resolve, 9000));
+  const serverTimestamp = new Date().toISOString();   
+  return <p>Fresh Server Timestamp: {serverTimestamp}</p>;
+}
+
+function Loader() {
+  return <span className="flex gap-2" role="status" aria-label="Loading">
+    <span className="size-3 animate-pulse rounded-full bg-indigo-600" aria-hidden="true"></span>
+    <span
+      className="size-3 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.2s]"
+      aria-hidden="true"
+    ></span>
+    <span
+      className="size-3 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.4s]"
+      aria-hidden="true"
+    ></span>
+  </span>
+}
+
+
+
+export default async function FastTargetPage() {
+
   return (
     <div className="p-8 rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-zinc-900 space-y-6 max-w-2xl mx-auto">
       <div className="flex items-center justify-between">
@@ -20,6 +47,10 @@ export default function FastTargetPage() {
       <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 text-xs font-mono space-y-1 text-zinc-600 dark:text-zinc-300">
         <p>Route: /navigation/prefetching/fast-target</p>
         <p>Rendering Type: Static / Instant Prefetched Shell</p>
+        {/* 3. Wrap the dynamic component in Suspense */}
+        <Suspense fallback={<p><span>Fresh Server Timestamp:</span> <span>{Loader()} </span> </p>}>
+          <ServerTimestamp />
+        </Suspense>
       </div>
 
       <div>

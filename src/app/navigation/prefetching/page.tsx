@@ -3,7 +3,7 @@ import PrefetchController from "./_components/PrefetchController";
 
 export default function PrefetchingLabPage() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {/* Header */}
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
@@ -17,51 +17,22 @@ export default function PrefetchingLabPage() {
         </p>
       </div>
 
-      {/* CRITICAL NOTE: Dev vs Prod */}
-      <div className="p-5 rounded-2xl border-2 border-amber-300 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/30 space-y-2 text-zinc-900 dark:text-zinc-100">
-        <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300 text-sm">
-          <span>⚠️ Why you don&apos;t see automatic network calls in `npm run dev`:</span>
-        </div>
-        <p className="text-xs text-amber-900/90 dark:text-amber-200/90 leading-relaxed">
-          <strong>Automatic viewport prefetching is intentionally disabled in Next.js development mode (`next dev`).</strong>
-          <br />
-          In development, routes are compiled on demand. If Next.js prefetched every link as soon as it appeared on screen, it would trigger massive compilation spikes for every route in your project.
-          <br />
-          In <strong>development</strong>, Next.js only prefetches on <strong>mouse hover</strong> or <strong>click</strong>.
-          To see automatic viewport prefetching fire the moment a page loads without touching the mouse, you must test a production build:
+      {/* Production Notice */}
+      <div className="p-4 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30 text-xs text-zinc-700 dark:text-zinc-300 space-y-1">
+        <p className="font-bold text-emerald-800 dark:text-emerald-300">
+          ✅ Running in Production Mode (`next start`)
         </p>
-        <div className="p-2.5 rounded-lg bg-black text-emerald-400 font-mono text-xs mt-2 select-all">
-          npm run build &amp;&amp; npm start
-        </div>
-      </div>
-
-      {/* Direct answers to Core Questions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-2">
-          <h3 className="font-bold text-sm text-blue-600 dark:text-blue-400">
-            Q1: If prefetch=&#123;true&#125;, do I see network calls without clicking?
-          </h3>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            <strong>YES (in Production).</strong> As soon as the <code className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">&lt;Link&gt;</code> enters your browser viewport, Next.js automatically dispatches background HTTP requests to fetch the route&apos;s RSC payload and JS chunks. You do <strong>not</strong> need to click.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-2">
-          <h3 className="font-bold text-sm text-purple-600 dark:text-purple-400">
-            Q2: Is it prefetched even before reaching the viewport?
-          </h3>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            <strong>NO.</strong> Next.js attaches an <code className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">IntersectionObserver</code> to every link. Links placed far down the page (below the fold) are <strong>never</strong> downloaded until you scroll down and bring them into view.
-          </p>
-        </div>
+        <p>
+          Automatic viewport prefetching is active! In DevTools &rarr; <strong>Network tab</strong> (filter: <strong>Fetch/XHR</strong>), you can inspect prefetch requests as they happen.
+        </p>
       </div>
 
       {/* SECTION 1: Above-The-Fold Comparison */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-bold">1. Above-The-Fold Comparison (Visible in Viewport Now)</h3>
+          <h3 className="text-lg font-bold">1. Above-The-Fold Links (In Viewport on Page Load)</h3>
           <p className="text-xs text-zinc-500">
-            These links are currently in your viewport. Notice how each behaves differently:
+            Because these cards are visible immediately on load, Next.js prefetches their unique routes right away:
           </p>
         </div>
 
@@ -77,7 +48,9 @@ export default function PrefetchingLabPage() {
               </div>
               <h4 className="font-bold text-base mt-2">Eager Full Prefetch</h4>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                Next.js downloads the full route payload and dependencies <strong>immediately</strong> as soon as this card appears in the viewport.
+                URL: <code className="font-mono text-emerald-600">/fast-target</code>
+                <br />
+                Prefetched immediately when page loads in viewport.
               </p>
             </div>
             <Link
@@ -85,7 +58,7 @@ export default function PrefetchingLabPage() {
               prefetch={true}
               className="block w-full py-2.5 text-center text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm"
             >
-              Test: &lt;Link prefetch=&#123;true&#125;&gt; &rarr;
+              Open Fast Target &rarr;
             </Link>
           </div>
 
@@ -100,7 +73,9 @@ export default function PrefetchingLabPage() {
               </div>
               <h4 className="font-bold text-base mt-2">Completely Disabled</h4>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                Will <strong>NEVER</strong> prefetch in the background, neither on viewport entry nor on hover. Network requests only occur <strong>when clicked</strong>.
+                URL: <code className="font-mono text-red-600">/dynamic-target</code>
+                <br />
+                Never prefetched. Request only happens when you click!
               </p>
             </div>
             <Link
@@ -108,7 +83,7 @@ export default function PrefetchingLabPage() {
               prefetch={false}
               className="block w-full py-2.5 text-center text-xs font-bold rounded-lg bg-red-600 hover:bg-red-700 text-white transition shadow-sm"
             >
-              Test: &lt;Link prefetch=&#123;false&#125;&gt; &rarr;
+              Open Dynamic Target &rarr;
             </Link>
           </div>
 
@@ -123,67 +98,75 @@ export default function PrefetchingLabPage() {
               </div>
               <h4 className="font-bold text-base mt-2">Smart Auto-Prefetch</h4>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                Prefetches the static parts or App Shell down to the nearest <code className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">loading.tsx</code> boundary.
+                URL: <code className="font-mono text-blue-600">/auto-target</code>
+                <br />
+                Prefetches the App Shell when visible.
               </p>
             </div>
             <Link
-              href="/navigation/prefetching/fast-target"
+              href="/navigation/prefetching/auto-target"
               className="block w-full py-2.5 text-center text-xs font-bold rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 transition"
             >
-              Test: Default &lt;Link&gt; &rarr;
+              Open Auto Target &rarr;
             </Link>
           </div>
         </div>
       </div>
 
-      {/* SECTION 2: Below-the-fold Viewport Test */}
-      <div className="p-6 rounded-2xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/20 dark:bg-purple-950/20 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-purple-600 text-white uppercase tracking-wider">
-            2. Viewport Boundary Experiment
-          </span>
-          <span className="text-xs text-purple-700 dark:text-purple-300 font-mono">
-            IntersectionObserver Verification
-          </span>
-        </div>
-
-        <div>
-          <h4 className="font-bold text-base">Does Next.js prefetch before reaching the viewport?</h4>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
-            To prove Next.js does <strong>not</strong> prefetch links hidden far below the screen, we placed a test link behind a 600px scroll container below. Open your Network tab, scroll down into the box, and watch the prefetch request trigger <strong>only after</strong> the link enters visibility!
-          </p>
-        </div>
-
-        {/* Scroll Box */}
-        <div className="h-44 overflow-y-auto border border-dashed border-purple-300 dark:border-purple-800 rounded-xl p-4 bg-white dark:bg-zinc-900 space-y-4">
-          <p className="text-xs text-zinc-400">
-            👇 Scroll down inside this container to reveal the hidden link below...
-          </p>
-          <div className="h-64 flex items-center justify-center text-zinc-300 dark:text-zinc-700 text-xs font-mono">
-            [ Spacer: Link is currently OUTSIDE the viewport ]
-          </div>
-          <div className="p-4 rounded-lg bg-purple-100 dark:bg-purple-900/50 border border-purple-300 dark:border-purple-700 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-purple-900 dark:text-purple-200">
-                🎯 Hidden Target Link
-              </p>
-              <p className="text-[11px] text-purple-700 dark:text-purple-300">
-                You just scrolled this link into the viewport! Next.js detected it via IntersectionObserver and prefetched it now.
-              </p>
-            </div>
-            <Link
-              href="/navigation/prefetching/fast-target"
-              prefetch={true}
-              className="px-3 py-1.5 text-xs font-bold rounded-md bg-purple-600 hover:bg-purple-700 text-white transition whitespace-nowrap"
-            >
-              Open Link &rarr;
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 3: Programmatic Prefetching */}
+      {/* Programmatic Prefetching API */}
       <PrefetchController />
+
+      {/* SECTION 2: Below-the-fold Viewport Test with Real Page Distance */}
+      <div className="p-6 rounded-2xl border-2 border-purple-300 dark:border-purple-800 bg-purple-50/20 dark:bg-purple-950/20 space-y-4">
+        <div>
+          <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-purple-600 text-white uppercase tracking-wider">
+            2. Real Viewport Scroll Experiment
+          </span>
+          <h4 className="text-xl font-bold mt-2">Test: Does Next.js prefetch before you scroll?</h4>
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+            Look at your DevTools <strong>Network tab</strong> right now. Notice that <strong>no request</strong> for <code className="font-mono font-bold text-purple-600 dark:text-purple-400">/scroll-target</code> exists yet!
+            <br />
+            Scroll down the main window past the spacer below. As soon as you scroll near the bottom, watch the request for <code className="font-mono font-bold text-purple-600 dark:text-purple-400">scroll-target</code> appear in the Network tab!
+          </p>
+        </div>
+
+        {/* Real Vertical Page Spacer (1,000 pixels down the document) */}
+        <div className="h-[900px] border-2 border-dashed border-purple-200 dark:border-purple-900 rounded-xl flex flex-col items-center justify-center p-8 text-center space-y-2">
+          <span className="text-3xl animate-bounce">👇</span>
+          <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+            900px Vertical Page Distance
+          </p>
+          <p className="text-xs text-zinc-400 max-w-md">
+            Next.js observes against the <strong>main browser window</strong> with a 200px buffer margin. While you are up here, the link below is far outside the viewport, so Next.js downloads nothing.
+          </p>
+          <p className="text-xs text-purple-600 font-mono">
+            Keep scrolling down...
+          </p>
+        </div>
+
+        {/* The Hidden Link at the very bottom */}
+        <div className="p-6 rounded-xl bg-purple-100 dark:bg-purple-900/60 border border-purple-300 dark:border-purple-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+              <h5 className="font-bold text-purple-950 dark:text-purple-100 text-base">
+                🎯 Scroll Target Link Reached!
+              </h5>
+            </div>
+            <p className="text-xs text-purple-800 dark:text-purple-300 mt-1">
+              Check your DevTools Network tab now! The request for <code className="font-mono font-bold">/navigation/prefetching/scroll-target</code> just fired because this link crossed into the viewport.
+            </p>
+          </div>
+
+          <Link
+            href="/navigation/prefetching/scroll-target"
+            prefetch={true}
+            className="px-5 py-2.5 text-xs font-bold rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition shadow-md whitespace-nowrap text-center"
+          >
+            Visit Scroll Target &rarr;
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
